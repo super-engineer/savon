@@ -49,6 +49,7 @@ module Savon
         :namespaces                => {},
         :logger                    => Logger.new($stdout),
         :log                       => true,
+        :log_level                 => :debug,
         :filters                   => [],
         :pretty_print_xml          => false,
         :raise_errors              => true,
@@ -59,13 +60,7 @@ module Savon
 
       options = defaults.merge(options)
 
-      # this option is a shortcut on the logger which needs to be set
-      # before it can be modified to set the option.
-      delayed_level = options.delete(:log_level)
-
       super(options)
-
-      log_level(delayed_level) unless delayed_level.nil?
     end
 
     # Location of the local or remote WSDL document.
@@ -158,16 +153,8 @@ module Savon
       @options[:logger] = logger
     end
 
-    # Changes the Logger's log level.
-    def log_level(level)
-      levels = { :debug => 0, :info => 1, :warn => 2, :error => 3, :fatal => 4 }
-
-      unless levels.include? level
-        raise ArgumentError, "Invalid log level: #{level.inspect}\n" \
-                             "Expected one of: #{levels.keys.inspect}"
-      end
-
-      @options[:logger].level = levels[level]
+    def log_level(log_level)
+      @options[:log_level] = log_level
     end
 
     # A list of XML tags to filter from logged SOAP messages.
